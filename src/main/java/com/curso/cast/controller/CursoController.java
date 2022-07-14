@@ -48,6 +48,7 @@ public class CursoController {
 		}
 	}
 
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 	// Método de Buscar cursos por ID
 	@ApiOperation("Serviço para buscar cursos por Id")
 	@GetMapping(value = "/{IdCurso}")
@@ -62,20 +63,22 @@ public class CursoController {
 		}
 	}
 
+	//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 	// Método de editar todos os cursos
 	@ApiOperation("Serviço para atualizar cursos")
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> update(@RequestBody Curso curso) {
+	public ResponseEntity<?> editar(@RequestBody Curso curso) {
 		try {
 			LOGGER.info("Curso atualizado com sucesso!");
 			service.editar(curso);
 			return ResponseEntity.status(HttpStatus.OK).body("Curso editado com sucesso!");
 		} catch (Exception e) {
 			LOGGER.info("Curso não atualizado.");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("erro:" + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
 		}
 	}
 
+	//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 	// Método de deletar cursos por Id
 	@ApiOperation("Serviço para deletar cursos por Id")
 	@DeleteMapping(value = "/{IdCurso}")
@@ -91,6 +94,7 @@ public class CursoController {
 		}
 	}
 
+	//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 	// Método de Filtrar por descricao e data
 	@CrossOrigin
 	@GetMapping

@@ -36,31 +36,69 @@ public class CursoService {
 	@Transactional
 	public void cadastrar(Curso curso) {
 		LOGGER.info("A pagina de Cadastro foi inicializada com sucesso!");
-		validaData(curso);
-		validacao(curso);
-		validacao1(curso);
+		validaDataAbertura(curso);
+		validaDataFechamento(curso);
+		validaPeriodo(curso);
 		cursoRepository.save(curso);
 	}
 
 	@Transactional
 	public void editar(Curso IdCurso) {
 		LOGGER.info("A pagina de Editar Cursos foi inicializada com sucesso!");
-		validaData(IdCurso);
+		validaDataAbertura(IdCurso);
+		validaDataFechamento(IdCurso);
+		validaEditar(IdCurso);
 		cursoRepository.save(IdCurso);
 	}
 
-	@Transactional
-	public List<Curso> listar() {
-		LOGGER.info("Lista de Cursos retornada com sucesso!");
-		return cursoRepository.findAll();
-	}
-
-	public void validacao(Curso curso) {
+	public void validaDataFechamento(Curso curso) {
 		if (curso.getDataAbertura().isBefore(LocalDate.now())) {
 			LOGGER.info("Data de Inicio não pode ser menor que a data atual!");
 			throw new RuntimeException("Data de início não pode ser menor que a data atual!");
 
 		}
+	}
+
+	private void validaDataAbertura(Curso curso) {
+		if (curso.getDataAbertura().isAfter(curso.getDataFechamento())) {
+			LOGGER.info("A data de abertura é maior que a data de fechamento");
+			throw new RuntimeException("A data de abertura é maior que a data de fechamento");
+		}
+
+	}
+
+	private ResponseEntity<String> validaPeriodo(Curso curso) {
+		Optional<Curso> cursos = cursoRepository.cadastrar(curso.getDataAbertura(), curso.getDataFechamento());
+		if (curso != null && !cursos.isEmpty()) {
+			throw new RuntimeException("Existe(m) Curso(s) Planejados(s) Dentro do Período Informado");
+		}
+
+		return null;
+	}
+
+	private ResponseEntity<String> validaEditar(Curso curso) {
+		Optional<Curso> cursos = cursoRepository.editar(curso.getDataAbertura(), curso.getDataFechamento(),
+				curso.getIdCurso());
+		if (curso != null && !cursos.isEmpty()) {
+			LOGGER.info("Mensagem de log: data não validada");
+			throw new RuntimeException("Existe(m) Curso(s) Planejados(s) Dentro do Período Informado");
+		}
+
+		return null;
+	}
+
+	public Curso recuperarCurso(Integer idCurso) {
+		return cursoRepository.findById(idCurso).get();
+	}
+
+	public void validaDelete(Integer idCurso) {
+		Optional<Curso> curso = cursoRepository.findById(idCurso);
+		Curso c = curso.get();
+		LOGGER.info("Não é permitida a exclusão de cursos já realizados!");
+		if (c.getDataAbertura().isBefore(LocalDate.now())) {
+			throw new RuntimeException("Não é permitido a exclusão de cursos já realizados!");
+		}
+		cursoRepository.deleteById(idCurso);
 	}
 
 	public List<Curso> consultar(String descricao, LocalDate dataAbertura, LocalDate dataFechamento) {
@@ -95,36 +133,6 @@ public class CursoService {
 		TypedQuery<Curso> query = em.createQuery(criteriaQuery);
 
 		return query.getResultList();
-	}
-
-	private void validaData(Curso curso) {
-		if (curso.getDataAbertura().isAfter(curso.getDataFechamento())) {
-			LOGGER.info("A data de abertura é maior que a data de fechamento");
-			throw new RuntimeException("A data de abertura é maior que a data de fechamento");
-		}
-
-	}
-	private ResponseEntity<String> validacao1(Curso curso){
-		Optional<Curso> cursos = cursoRepository.exists(curso.getDataAbertura(), curso.getDataFechamento());
-		if (curso != null && !cursos.isEmpty()) {
-			throw new RuntimeException("Existe(m) Curso(s) Planejados(s) Dentro do Período Informado");	
-		}
-		
-		return null;
-	}
-	
-	public Curso recuperarCurso(Integer idCurso) {
-		return cursoRepository.findById(idCurso).get();
-	}
-
-	public void validaDelete(Integer idCurso) {
-		Optional<Curso> curso = cursoRepository.findById(idCurso);
-		Curso c = curso.get();
-		LOGGER.info("Não é permitida a exclusão de cursos já realizados!");
-		if (c.getDataAbertura().isBefore(LocalDate.now())) {
-			throw new RuntimeException("Não é permitido a exclusão de cursos já realizados!");
-		}
-		cursoRepository.deleteById(idCurso);
 	}
 
 }

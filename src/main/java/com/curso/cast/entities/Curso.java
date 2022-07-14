@@ -11,14 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.envers.Audited;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Audited
 @Entity
 @Table(name = "cursos")
-public class Curso implements Serializable {
+public class Curso extends Log implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
